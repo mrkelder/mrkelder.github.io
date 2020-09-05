@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pure skill</title>
+</head>
+
+<body>
+  <canvas width="600" height="600" id="canvas" style="border: 1px solid black;"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let zonePositionX = Math.floor(Math.floor(Math.random() * (250 - 100) - 100));
+    let zonePositionY = Math.floor(Math.floor(Math.random() * (250 - 100) - 100));
+
+    let zoneWidth = canvas.width * 1.5;
+    let zoneHeight = canvas.height * 1.5;
+
+    const speed = 25;
+    const time = 100;
+
+    let gAppleX = null;
+    let gAppleY = null;
+
+    const snake1 = {
+      x: 25 * 10,
+      y: 25 * 2,
+      width: 25,
+      height: 25,
+      xd: speed,
+      yd: 0,
+      tail: [
+        { x: 25 * 10 - 25, y: 25 * 2 },
+        { x: 25 * 10 - 25 * 2, y: 25 * 2 },
+        { x: 25 * 10 - 25 * 3, y: 25 * 2 },
+      ],
+      streches: false
+    }
+
+    const snake2 = {
+      x: 25 * 15,
+      y: 25 * 15,
+      width: 25,
+      height: 25,
+      xd: -speed,
+      yd: 0,
+      tail: [
+        { x: 25 * 15 + 25, y: 25 * 15 },
+        { x: 25 * 15 + 25 * 2, y: 25 * 15 },
+        { x: 25 * 15 + 25 * 3, y: 25 * 15 },
+      ],
+      streches: false
+    }
+
+    function spawnApple(x = null, y = null) {
+      if (x === null && y === null) {
+        let rerenderRandomValue = false;
+
+        const allowedAmountX = canvas.width / 25;
+        const allowedAmountY = canvas.height / 25;
+
+        let appleX;
+        let appleY;
+
+        do {
+          appleX = Math.floor(Math.random() * (allowedAmountX - 0) + 0) * 25;
+          appleY = Math.floor(Math.random() * (allowedAmountY - 0) + 0) * 25;
+          for (let i of snake1.tail) {
+            if (i.x === appleX && i.y === appleY || snake1.x === appleX && snake1.y === appleY) {
+              rerenderRandomValue = true;
+              break;
+            }
+            else {
+              rerenderRandomValue = false;
+            }
+          }
+          for (let i of snake2.tail) {
+            if (i.x === appleX && i.y === appleY || snake2.x === appleX && snake2.y === appleY) {
+              rerenderRandomValue = true;
+              break;
+            }
+            else {
+              rerenderRandomValue = false;
+            }
+          }
+        }
+        while (rerenderRandomValue);
+
+        ctx.fillStyle = 'red';
+        ctx.fillRect(appleX, appleY, 25, 25);
+        return [appleX, appleY];
+      }
+      else {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(x, y, 25, 25);
+        return [x, y];
+      }
+    }
+
+    function changeSnakePosition(snake, color) {
+      const { x, xd, y, yd, width, height, tail, streches } = snake;
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, width, height);
+
+      for (let i of tail) {
+        ctx.fillRect(i.x, i.y, width, height);
+      }
+
+      const firstXCopy = x;
+      const firstYCopy = y;
+      const tailCopy = tail;
+      const newTail = [];
+      let latestChunkOfTail;
+      for (let [index, i] of tail.entries()) {
+        const newElement = {};
+        if (index === 0) {
+          // The first chunk of tail
+          newElement.x = firstXCopy;
+          newElement.y = firstYCopy;
+          newTail.push(newElement);
+        }
+        else {
+          // Other chunks of tail
+          if (tailCopy.length - 1 === index) latestChunkOfTail = i;
+          newElement.x = tailCopy[index - 1].x;
+          newElement.y = tailCopy[index - 1].y;
+          newTail.push(newElement);
+        }
+      }
+      snake.tail = newTail;
+      if (streches) {
+        // If snake ate an apple one frame ago then make it bigger
+        snake.tail.push(latestChunkOfTail);
+        snake.streches = false;
+      }
+
+      if (snake.x > -width && snake.x + snake.width < canvas.width + width) {
+        // Horizontal edge
+        snake.x = x + xd;
+      }
+      else {
+        console.log('Вы проиграли');
+        clearInterval(frameInterval);
+      }
+
+      if (snake.y > -height && snake.y + snake.height < canvas.height + height) {
+        // Vertical edge
+        snake.y = y + yd;
+      }
+      else {
+        console.log('Вы проиграли');
+        clearInterval(frameInterval);
+      }
+
+      for (let i of newTail) {
+        // If snake bites its tail
+        if (i.x === snake.x && i.y === snake.y) {
+          console.log('Вы проиграли');
+          clearInterval(frameInterval);
+        }
+      }
+
+      if (snake.x === gAppleX && snake.y === gAppleY) {
+        gAppleX = null;
+        gAppleY = null;
+        snake.streches = true;
+      }
+    }
+
+    function makeZone() {
+      ctx.fillStyle = 'red';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(zonePositionX, zonePositionY, zoneWidth, zoneHeight);
+      zoneWidth -= 1;
+      zoneHeight -= 1;
+      // setTimeout(() => { clearInterval(zoneInterval); zoneInterval = setInterval(makeZone, 5000) }, 5000);
+    }
+
+    function drawFrame() {
+      // Draws the whole frame (player , apples , zone)
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      makeZone();
+      changeSnakePosition(snake1, 'green');
+      changeSnakePosition(snake2, '#eb4034');
+      const arrayOfAppleCooridates = spawnApple(gAppleX, gAppleY);
+      [gAppleX, gAppleY] = arrayOfAppleCooridates;
+    }
+
+    drawFrame();
+
+    // Turn off the interval to stop updating frames
+    let frameInterval = setInterval(drawFrame, time);
+    // let zoneInterval = setInterval(makeZone, 5000);
+
+    window.addEventListener('keydown', ({ key }) => {
+      if (!(snake1.xd === speed && key === 'ArrowLeft' || snake1.xd === -speed && key === 'ArrowRight' || snake1.yd === speed && key === 'ArrowUp' || snake1.yd === -speed && key === 'ArrowDown')) {
+        switch (key) {
+          case 'ArrowLeft': snake1.xd = -speed; snake1.yd = 0; break;
+          case 'ArrowRight': snake1.xd = speed; snake1.yd = 0; break;
+          case 'ArrowUp': snake1.xd = 0; snake1.yd = -speed; break;
+          case 'ArrowDown': snake1.xd = 0; snake1.yd = speed; break;
+        }
+      }
+      if (!(snake2.xd === speed && key === 'a' || snake2.xd === -speed && key === 'd' || snake2.yd === speed && key === 'w' || snake2.yd === -speed && key === 's')) {
+        switch (key) {
+          case 'a': snake2.xd = -speed; snake2.yd = 0; break;
+          case 'd': snake2.xd = speed; snake2.yd = 0; break;
+          case 'w': snake2.xd = 0; snake2.yd = -speed; break;
+          case 's': snake2.xd = 0; snake2.yd = speed; break;
+        }
+      }
+    });
+
+  </script>
+</body>
+
+</html>
