@@ -46,12 +46,13 @@
       <button class="btn btn-success" style="width: 150px; margin-top: 15px;" id="startGame">Start the game</button>
       <button class="btn btn-info" style="width: 100px; margin-top: 15px; display: none;" id="playAgain">Сыграем еще?</button>
     </div>
-    <img src="skin1.png" id="skin1" style="display: none;">
-    <img src="skin2.jpg" id="skin2" style="display: none;">
-    <img src="skin3.PNG" id="skin3" style="display: none;">
-    <img src="skin4.PNG" id="skin4" style="display: none;">
-    <img src="skin5.PNG" id="skin5" style="display: none;">
-    <img src="skin6.PNG" id="skin6" style="display: none;">
+    <img src="skin1.png" id="skin1" style="display: none;"/>
+    <img src="skin2.jpg" id="skin2" style="display: none;"/>
+    <img src="skin3.PNG" id="skin3" style="display: none;"/>
+    <img src="skin4.PNG" id="skin4" style="display: none;"/>
+    <img src="skin5.PNG" id="skin5" style="display: none;"/>
+    <img src="skin6.PNG" id="skin6" style="display: none;"/>
+    <img src="apple.png" id="apple" style="display: none;"/>
   </div>
 
   <script>
@@ -149,13 +150,15 @@
         }
         while (rerenderRandomValue);
 
-        ctx.fillStyle = 'red';
-        ctx.fillRect(appleX, appleY, 25, 25);
+        // ctx.fillStyle = 'red';
+        // ctx.fillRect(appleX, appleY, 25, 25);
+        ctx.drawImage(document.getElementById('apple'), appleX, appleY, 25, 25);
         return [appleX, appleY];
       }
       else {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(x, y, 25, 25);
+        // ctx.fillStyle = 'red';
+        // ctx.fillRect(x, y, 25, 25);
+        ctx.drawImage(document.getElementById('apple'), x, y, 25, 25);
         return [x, y];
       }
     }
