@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <!-- Vlad Ageev => https://vk.com/niko_web_dev -->
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <link rel="stylesheet" href="bootstrap.min.css" />
   <title>Snake:PUBG</title>
 </head>
 
@@ -44,15 +44,16 @@
       <span>Do you wanna play alone?</span>
       <input type="checkbox" onChange="playAlone()" CHECKED>
       <button class="btn btn-success" style="width: 150px; margin-top: 15px;" id="startGame">Start the game</button>
-      <button class="btn btn-info" style="width: 100px; margin-top: 15px; display: none;" id="playAgain">Сыграем еще?</button>
+      <button class="btn btn-info" style="width: 100px; margin-top: 15px; display: none;" id="playAgain">Сыграем
+        еще?</button>
     </div>
-    <img src="skin1.png" id="skin1" style="display: none;"/>
-    <img src="skin2.jpg" id="skin2" style="display: none;"/>
-    <img src="skin3.PNG" id="skin3" style="display: none;"/>
-    <img src="skin4.PNG" id="skin4" style="display: none;"/>
-    <img src="skin5.PNG" id="skin5" style="display: none;"/>
-    <img src="skin6.PNG" id="skin6" style="display: none;"/>
-    <img src="apple.png" id="apple" style="display: none;"/>
+    <img src="skin1.png" id="skin1" style="display: none;" />
+    <img src="skin2.jpg" id="skin2" style="display: none;" />
+    <img src="skin3.PNG" id="skin3" style="display: none;" />
+    <img src="skin4.PNG" id="skin4" style="display: none;" />
+    <img src="skin5.PNG" id="skin5" style="display: none;" />
+    <img src="skin6.PNG" id="skin6" style="display: none;" />
+    <img src="apple.png" id="apple" style="display: none;" />
   </div>
 
   <script>
@@ -228,7 +229,7 @@
         // Horizontal edge
         snake.x = x + xd;
       }
-      else if(snake.canBeKilled){
+      else if (snake.canBeKilled) {
         stopGame(`${snake.name} tried to pass the border, ${enemy.name} wins`);
       }
 
@@ -236,7 +237,7 @@
         // Vertical edge
         snake.y = y + yd;
       }
-      else if(snake.canBeKilled) {
+      else if (snake.canBeKilled) {
         stopGame(`${snake.name} tried to pass the border, ${enemy.name} wins`);
       }
 
@@ -386,10 +387,8 @@
           case 'ArrowDown': snake1.xd = 0; snake1.yd = speed; break;
         }
       }
-    });
-
-    window.addEventListener('keydown', ({ key }) => {
       if (!(snake2.xd === speed && key === 'a' || snake2.xd === -speed && key === 'd' || snake2.yd === speed && key === 'w' || snake2.yd === -speed && key === 's')) {
+        console.log(key)
         switch (key) {
           case 'a': snake2.xd = -speed; snake2.yd = 0; break;
           case 'd': snake2.xd = speed; snake2.yd = 0; break;
@@ -398,7 +397,6 @@
         }
       }
     });
-
   </script>
 </body>
 
