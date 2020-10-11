@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расчет дискриминанта</title>
+  <style>
+    input {
+      width: 45px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Расчет дискриминанта</h1>
+  <input type="number" value="0" id="oneInp">
+  <span>x<sup>2</sup> + </span>
+  <input type="number" value="0" id="twoInp">
+  <span>x + </span>
+  <input type="number" value="0" id="threeInp">
+  <span>= 0;</span>
+  <br>
+  <br>
+  <button id="btn">Посчитать дискриминант</button>
+
+  <p id="outcome"></p>
+
+  <script>
+    document.getElementById('btn').onclick = () => {
+      const a = Number(document.getElementById('oneInp').value);
+      const b = Number(document.getElementById('twoInp').value);
+      const c = Number(document.getElementById('threeInp').value);
+      document.getElementById('outcome').innerText = Math.pow(b, 2) - 4 * a * c;
+    }
+  </script>
+
+</body>
+
+</html>

@@ -1,403 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Vlad Ageev => https://vk.com/niko_web_dev -->
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="bootstrap.min.css" />
-  <title>Snake:PUBG</title>
+  <title>Влад Агеев КИ-20а</title>
+  <link rel="stylesheet" href="./bootstrap.min.css">
+  <style>
+    body {
+      padding: 15px;
+    }
+
+    .post {
+      max-width: 500px;
+    }
+  </style>
 </head>
 
 <body>
-  <div style="display: flex;">
-    <canvas width="600" height="600" id="canvas" style="border: 1px solid black;"></canvas>
-    <div style="display: flex; flex-direction: column; padding: 0 15px;">
-      <h2 id="status" style="margin-top: 0;">Prepare for the game</h2>
-      <h4>Player one</h4>
-      <input type="text" class="form-control" placeholder="Name" aria-label="Sizing example input"
-        aria-describedby="inputGroup-sizing-sm" style="width: 308px" id="input1" oninput="changeName(snake1 , 'input1')"
-        value="Snake1">
-      <span style="margin-top: 5px;">Movement - arrows</span>
-      <span style="margin-top: 5px;">Skin:</span>
-      <select class="custom-select" id="inputGroupSelect01" style="width: 308px"
-        onchange="changeSkin(snake1 , this.value)">
-        <option value="green" selected>Green color</option>
-        <option value="skin4">Ze President</option>
-        <option value="skin6">Head of Le Eben Grad</option>
-        <option value="skin5">Red Pooti</option>
-      </select>
-      <br>
-      <h4>Player two</h4>
-      <input type="text" class="form-control" placeholder="Name" aria-label="Sizing example input"
-        aria-describedby="inputGroup-sizing-sm" style="width: 308px" id="input2" onInput="changeName(snake2 , 'input2')"
-        value="Snake2">
-      <span style="margin-top: 5px;">Movement - WASD (sometimes does NOT work)</span>
-      <span style="margin-top: 5px;">Skin:</span>
-      <select class="custom-select" id="inputGroupSelect01" style="width: 308px"
-        onchange="changeSkin(snake2 , this.value)">
-        <option value="pink" selected>Pink color</option>
-        <option value="skin1">Blu Pooti</option>
-        <option value="skin3">PewDiePie</option>
-        <option value="skin2">GeNtlEMeN?</option>
-      </select>
-      <span>Do you wanna play alone?</span>
-      <input type="checkbox" onChange="playAlone()" CHECKED>
-      <button class="btn btn-success" style="width: 150px; margin-top: 15px;" id="startGame">Start the game</button>
-      <button class="btn btn-info" style="width: 100px; margin-top: 15px; display: none;" id="playAgain">Сыграем
-        еще?</button>
+  <h2>Лабораторные работы</h2>
+  <br>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Математическая формула</h5>
+      <p class="card-text">Расчет дискриминанта по готовой формуле. Пользователь должен ввести только числа a , b ,c</p>
+      <a href="./mathFormula.html"> <button type="button" class="btn btn-primary">Перейти</button> </a>
     </div>
-    <img src="skin1.PNG" id="skin1" style="display: none;" />
-    <img src="skin2.jpg" id="skin2" style="display: none;" />
-    <img src="skin3.PNG" id="skin3" style="display: none;" />
-    <img src="skin4.PNG" id="skin4" style="display: none;" />
-    <img src="skin5.PNG" id="skin5" style="display: none;" />
-    <img src="skin6.PNG" id="skin6" style="display: none;" />
-    <img src="apple.png" id="apple" style="display: none;" />
   </div>
-
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    let letZoneResize = false;
-    let zoneWidth = canvas.width;
-    let zoneHeight = canvas.height;
-
-    let zonePositionX = canvas.width / 2 - zoneWidth / 2;
-    let zonePositionY = canvas.height / 2 - zoneHeight / 2;
-
-    let safeZoneX = [0, canvas.width];
-    let safeZoneY = [0, canvas.height];
-
-    const speed = 25;
-
-    let gAppleX = null;
-    let gAppleY = null;
-
-    const snake1 = {
-      x: 25 * 10,
-      y: 25 * 2,
-      width: 25,
-      height: 25,
-      xd: speed,
-      yd: 0,
-      tail: [
-        { x: 25 * 10 - 25, y: 25 * 2 },
-        { x: 25 * 10 - 25 * 2, y: 25 * 2 },
-        { x: 25 * 10 - 25 * 3, y: 25 * 2 },
-      ],
-      streches: false,
-      name: 'Snake1',
-      texture: {
-        status: 'color',
-        value: 'green'
-      },
-      canBeKilled: true
-    }
-
-    const snake2 = {
-      x: -150, // 25 * 15
-      y: -150, // 25 * 15
-      width: 25,
-      height: 25,
-      xd: -speed,
-      yd: 0,
-      tail: [
-        // { x: 25 * 15 + 25, y: 25 * 15 },
-        // { x: 25 * 15 + 25 * 2, y: 25 * 15 },
-        // { x: 25 * 15 + 25 * 3, y: 25 * 15 },
-      ],
-      streches: false,
-      name: 'Snake2',
-      texture: {
-        status: 'color',
-        value: 'pink'
-      },
-      canBeKilled: false
-    }
-
-    function spawnApple(x = null, y = null) {
-      if (x === null && y === null) {
-        let rerenderRandomValue = false;
-
-        const allowedAmountX = canvas.width / 25;
-        const allowedAmountY = canvas.height / 25;
-
-        let appleX;
-        let appleY;
-
-        do {
-          appleX = Math.floor(Math.random() * (allowedAmountX - 0) + 0) * 25;
-          appleY = Math.floor(Math.random() * (allowedAmountY - 0) + 0) * 25;
-          for (let i of snake1.tail) {
-            if (i.x === appleX && i.y === appleY || snake1.x === appleX && snake1.y === appleY) {
-              rerenderRandomValue = true;
-              break;
-            }
-            else {
-              rerenderRandomValue = false;
-            }
-          }
-          for (let i of snake2.tail) {
-            if (i.x === appleX && i.y === appleY || snake2.x === appleX && snake2.y === appleY) {
-              rerenderRandomValue = true;
-              break;
-            }
-            else {
-              rerenderRandomValue = false;
-            }
-          }
-        }
-        while (rerenderRandomValue);
-
-        ctx.fillStyle = 'red';
-        ctx.fillRect(appleX, appleY, 25, 25);
-        // ctx.drawImage(document.getElementById('apple'), appleX, appleY, 25, 25);
-        return [appleX, appleY];
-      }
-      else {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(x, y, 25, 25);
-        // ctx.drawImage(document.getElementById('apple'), x, y, 25, 25);
-        return [x, y];
-      }
-    }
-
-    function changeSnakePosition(snake, color, enemy) {
-      const { x, xd, y, yd, width, height, tail, streches } = snake;
-
-      if (snake.texture.status === 'img') {
-        ctx.drawImage(snake.texture.value, x, y, width, height);
-      }
-      else {
-        ctx.fillStyle = snake.texture.value;
-        ctx.fillRect(x, y, width, height);
-      }
-
-      // Renders the head
-      if (snake.texture.status === 'img') {
-        ctx.drawImage(snake.texture.value, x, y, width, height);
-      }
-      else {
-        ctx.fillStyle = snake.texture.value;
-        ctx.fillRect(x, y, width, height);
-      }
-      // ctx.fillStyle = color;
-      // ctx.fillRect(x, y, width, height);
-
-      for (let i of tail) {
-        // Renders the tail
-        // ctx.fillRect(i.x, i.y, width, height);
-        if (snake.texture.status === 'img') {
-          ctx.drawImage(snake.texture.value, i.x, i.y, width, height);
-        }
-        else {
-          ctx.fillRect(i.x, i.y, width, height);
-        }
-      }
-
-      const firstXCopy = x;
-      const firstYCopy = y;
-      const tailCopy = tail;
-      const newTail = [];
-      let latestChunkOfTail;
-      for (let [index, i] of tail.entries()) {
-        const newElement = {};
-        if (index === 0) {
-          // The first chunk of tail
-          newElement.x = firstXCopy;
-          newElement.y = firstYCopy;
-          newTail.push(newElement);
-        }
-        else {
-          // Other chunks of tail
-          if (tailCopy.length - 1 === index) latestChunkOfTail = i;
-          newElement.x = tailCopy[index - 1].x;
-          newElement.y = tailCopy[index - 1].y;
-          newTail.push(newElement);
-        }
-      }
-      snake.tail = newTail;
-      if (streches) {
-        // If snake ate an apple one frame ago then make it bigger
-        snake.tail.push(latestChunkOfTail);
-        snake.streches = false;
-      }
-
-      if (snake.x > -width && snake.x + snake.width < canvas.width + width) {
-        // Horizontal edge
-        snake.x = x + xd;
-      }
-      else if (snake.canBeKilled) {
-        stopGame(`${snake.name} tried to pass the border, ${enemy.name} wins`);
-      }
-
-      if (snake.y > -height && snake.y + snake.height < canvas.height + height) {
-        // Vertical edge
-        snake.y = y + yd;
-      }
-      else if (snake.canBeKilled) {
-        stopGame(`${snake.name} tried to pass the border, ${enemy.name} wins`);
-      }
-
-      for (let i of newTail) {
-        // If snake bites its tail
-        if (i.x === snake.x && i.y === snake.y && snake.canBeKilled) {
-          stopGame(`${snake.name} decided to kill himself, ${enemy.name} wins`);
-        }
-      }
-
-      if (snake.x === gAppleX && snake.y === gAppleY) {
-        gAppleX = null;
-        gAppleY = null;
-        snake.streches = true;
-      }
-
-      if (snake.x + snake.width < safeZoneX[0] || snake.x > safeZoneX[1] && snake.canBeKilled) {
-        // Death because of the zone
-        stopGame(`${snake.name} was killed by the zone`);
-      }
-
-      if (snake.y + snake.height < safeZoneY[0] || snake.y > safeZoneY[1] && snake.canBeKilled) {
-        // Death because of the zone
-        stopGame(`${snake.name} was killed by the zone`);
-      }
-
-      for (let i of enemy.tail) {
-        // Snake bite enemy's tail
-        if (i.x === snake.x && i.y === snake.y || enemy.x === snake.x && enemy.y === snake.y && snake.canBeKilled) {
-          stopGame(`${enemy.name} killed his enemy with the tail, sneaky mothefucker...`);
-        }
-      }
-    }
-
-    function stopGame(message) {
-      document.getElementById('status').innerText = message;
-      clearInterval(frameInterval);
-      document.getElementById('playAgain').style.display = 'block';
-      document.getElementById('playAgain').onclick = () => location.reload();
-    }
-
-    function makeZone() {
-      ctx.fillStyle = '#91c3ff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'white';
-      ctx.fillRect(zonePositionX, zonePositionY, zoneWidth, zoneHeight);
-      if (letZoneResize) {
-        zoneWidth -= 2;
-        zoneHeight -= 2;
-        zonePositionX = canvas.width / 2 - zoneWidth / 2;
-        zonePositionY = canvas.height / 2 - zoneHeight / 2;
-        safeZoneX[0] += 1;
-        safeZoneX[1] -= 1;
-        safeZoneY[0] += 1;
-        safeZoneY[1] -= 1;
-      }
-    }
-
-    function drawZoneTime() {
-      ctx.font = "30px Arial";
-      ctx.fillStyle = 'black';
-      ctx.fillText("Zone will start moving in", 140, 50);
-      ctx.font = "25px Arial";
-      ctx.fillText(`0:${timeForZone > 9 ? timeForZone : `0${timeForZone}`}`, 275, 90);
-    }
-
-    function drawFrame() {
-      // Draws the whole frame (player , apples , zone)
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      makeZone();
-      changeSnakePosition(snake1, 'green', snake2);
-      if (!isPlayAlone) changeSnakePosition(snake2, '#eb4034', snake1);
-      const arrayOfAppleCooridates = spawnApple(gAppleX, gAppleY);
-      [gAppleX, gAppleY] = arrayOfAppleCooridates;
-      if (timeForZone > 0) drawZoneTime();
-    }
-
-    function changeSkin(snake, value) {
-      if (value === 'green' || value === 'pink') {
-        snake.texture.status = 'color';
-        snake.texture.value = value;
-      }
-      else {
-        snake.texture.status = 'img';
-        snake.texture.value = document.getElementById(value)
-      }
-    }
-
-    function changeName(snake, inputName) {
-      const name = document.getElementById(inputName).innerText;
-      snake.name = name;
-    }
-
-    let isPlayAlone = true;
-
-    function playAlone() {
-      isPlayAlone = !isPlayAlone;
-      if (isPlayAlone) {
-        snake2.x = -150;
-        snake2.y = -150;
-        snake2.tail = [];
-        snake2.canBeKilled = false;
-      }
-      else {
-        snake2.x = 25 * 15;
-        snake2.y = 25 * 15;
-        snake2.tail = [
-          { x: 25 * 15 + 25, y: 25 * 15 },
-          { x: 25 * 15 + 25 * 2, y: 25 * 15 },
-          { x: 25 * 15 + 25 * 3, y: 25 * 15 },
-        ]
-        snake2.canBeKilled = true;
-      }
-    }
-
-    function startGame() {
-      // Turn off the interval to stop updating frames
-      frameInterval = setInterval(drawFrame, time);
-
-      setInterval(() => {
-        // Counts to zero
-        timeForZone -= 1;
-      }, 1000);
-
-      setTimeout(() => {
-        // Lets the zone move in 30 seconds
-        letZoneResize = true;
-      }, 30 * 1000);
-    }
-
-    let frameInterval;
-    const time = 100;
-    let timeForZone = 30;
-
-    let gameIsHappening = false;
-    document.getElementById('startGame').onclick = () => {
-      if (!gameIsHappening) startGame();
-      gameIsHappening = true;
-    };
-
-    window.addEventListener('keydown', ({ key }) => {
-      if (!(snake1.xd === speed && key === 'ArrowLeft' || snake1.xd === -speed && key === 'ArrowRight' || snake1.yd === speed && key === 'ArrowUp' || snake1.yd === -speed && key === 'ArrowDown')) {
-        switch (key) {
-          case 'ArrowLeft': snake1.xd = -speed; snake1.yd = 0; break;
-          case 'ArrowRight': snake1.xd = speed; snake1.yd = 0; break;
-          case 'ArrowUp': snake1.xd = 0; snake1.yd = -speed; break;
-          case 'ArrowDown': snake1.xd = 0; snake1.yd = speed; break;
-        }
-      }
-      if (!(snake2.xd === speed && key === 'a' || snake2.xd === -speed && key === 'd' || snake2.yd === speed && key === 'w' || snake2.yd === -speed && key === 's')) {
-        console.log(key)
-        switch (key) {
-          case 'a': snake2.xd = -speed; snake2.yd = 0; break;
-          case 'd': snake2.xd = speed; snake2.yd = 0; break;
-          case 'w': snake2.xd = 0; snake2.yd = -speed; break;
-          case 's': snake2.xd = 0; snake2.yd = speed; break;
-        }
-      }
-    });
-  </script>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Карта</h5>
+      <p class="card-text">Мой путь от дома до университета с использованием Google Maps</p>
+      <a href="./googleMaps.html"> <button type="button" class="btn btn-primary">Перейти</button> </a>
+    </div>
+  </div>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Игра на JavaScript</h5>
+      <p class="card-text">Популярные нынче режим игры battle royale перебрался в змейку. Можно выбрать скин для змейки
+        , а также имя игрока. Чтобы играть вдвоем , нужно отключить галочку "Do you wanna play alone?". Управление:
+        стрелочки на клавиатуре для первого игрока и WASD - для второго.</p>
+      <span class="badge badge-warning">Управление для второго игрока может не работать!</span>
+      <span class="badge badge-warning">Игра зависит от браузера</span>
+      <br>
+      <br>
+      <a href="./snake.html"> <button type="button" class="btn btn-primary">Перейти</button> </a>
+    </div>
+  </div>
+  <h2>Эссе</h2>
+  <br>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Эссе 1</h5>
+      <p class="card-text">Мой путь к информационным компьютерным технологиям</p>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <a href="./essay1.html">
+          <button type="button" class="btn btn-secondary">HTML</button>
+        </a>
+        <a href="./essay1.pdf">
+          <button type="button" class="btn btn-secondary">PDF</button>
+        </a>
+        <a href="./essay1.docx">
+          <button type="button" class="btn btn-secondary">DOCX</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Эссе 2</h5>
+      <p class="card-text">Мое представление о прошлом и будущем компьютинга</p>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <a href="./essay2.html">
+          <button type="button" class="btn btn-secondary">HTML</button>
+        </a>
+        <a href="./essay2.pdf">
+          <button type="button" class="btn btn-secondary">PDF</button>
+        </a>
+        <a href="./essay2.docx">
+          <button type="button" class="btn btn-secondary">DOCX</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="card mb-3 post">
+    <div class="card-body">
+      <h5 class="card-title">Эссе 3</h5>
+      <p class="card-text">Идеи и проекты , которые я бы хотел реализовать</p>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <a href="./essay3.html">
+          <button type="button" class="btn btn-secondary">HTML</button>
+        </a>
+        <a href="./essay3.pdf">
+          <button type="button" class="btn btn-secondary">PDF</button>
+        </a>
+        <a href="./essay3.docx">
+          <button type="button" class="btn btn-secondary">DOCX</button>
+        </a>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
