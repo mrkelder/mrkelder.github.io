@@ -44,6 +44,13 @@
       position: relative;
       width: 450px;
       height: 450px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #c {
+      border: 1px solid black;
     }
 
     .object_text {
@@ -56,6 +63,7 @@
       border: none;
       background-color: transparent;
     }
+
 
     #change_view {
       width: 500px;
@@ -135,6 +143,9 @@
     }
 
     .editor_entry {
+      margin: 0;
+      width: 75px;
+      background-color: white;
       margin-bottom: 1px;
       display: flex;
       justify-content: center;
@@ -142,6 +153,8 @@
       height: 75px;
       font-family: Arial, Helvetica, sans-serif;
       padding: 5px;
+      border: none;
+      outline: none;
       box-shadow: 0 0 2px 0 rgba(0, 0, 0, .3);
       box-sizing: border-box;
       transition: .5s;
@@ -159,19 +172,18 @@
 <body>
   <div id="sections">
     <div id="editor">
-      <div class="editor_entry" id="addText">
-        Text
-      </div>
-      <div class="editor_entry">
-        Upload
-      </div>
+      <button class="editor_entry" id="addText"> Text </button>
+      <label for="fileInp" class="editor_entry"> Upload </label>
+      <input type="file" id="fileInp" style="display: none;">
       <input class="editor_entry" id="choose_color" type="color" disabled>
     </div>
     <div id="imp_image_section">
       <div id="image_section">
         <div id="image"></div>
         <div id="fake_canvas">
-          <div id="canvas"></div>
+          <div id="canvas">
+            <canvas id="c" width="152" height="250"></canvas>
+          </div>
         </div>
       </div>
       <div id="change_view">
@@ -197,14 +209,10 @@
           data-color="heather black">
         </div>
       </div>
-      <span>Rotation: </span>
-      <input type="range" id="rotation" max="360" value="0" disabled />
-      <br>
-      <span>Scale: </span>
-      <input type="range" id="scale" max="150" value="14" disabled />
     </div>
   </div>
 
+  <script src="./fabric.min.js"></script>
   <script src="./hoodies.js"></script>
   <script src="./canvas.js"></script>
 </body>
