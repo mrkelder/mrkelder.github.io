@@ -159,11 +159,18 @@
       box-sizing: border-box;
       transition: .5s;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
     }
 
     .editor_entry:hover {
       transition: .5s;
       background-color: #f2f2f2;
+    }
+
+    .editor_entry img{
+      width: 25px;
     }
   </style>
 
@@ -172,10 +179,14 @@
 <body>
   <div id="sections">
     <div id="editor">
-      <button class="editor_entry" id="addText"> Text </button>
-      <label for="fileInp" class="editor_entry"> Upload </label>
+      <button class="editor_entry" id="addText"><img src="./text.png" /><span>Text</span></button>
+      <label for="fileInp" class="editor_entry"><img src="./file.png" /><span>Image</span></label>
       <input type="file" id="fileInp" style="display: none;">
-      <input class="editor_entry" id="choose_color" type="color" disabled>
+      <label for="choose_color">
+        <div class="editor_entry" id="color_button"><img src="./color-palette.png" /><span>Color</span></div>
+      </label>
+      <button class="editor_entry" id="addText"><img src="./delete.png" /><span>Remove</span></button>
+      <input id="choose_color" type="color" style="display: none;">
     </div>
     <div id="imp_image_section">
       <div id="image_section">

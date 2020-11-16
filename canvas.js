@@ -1,19 +1,21 @@
 const canvas = new fabric.Canvas('c');
+canvas.selection = false;
 const fileInput = document.getElementById('fileInp');
+const colorInput = document.getElementById('choose_color');
 const textObjects = [];
-const imageObjects = []
+const imageObjects = [];
+let lastlySelectedObject;
 
 document.getElementById('fileInp').addEventListener("change", function (e) {
-  var file = e.target.files[0];
-  var reader = new FileReader();
+  const file = e.target.files[0];
+  const reader = new FileReader();
   reader.onload = function (f) {
-    var data = f.target.result;
+    const data = f.target.result;
     fabric.Image.fromURL(data, function (img) {
-      var oImg = img.set({ left: 0, top: 0, angle: 0 }).scale(0.1);
+      const oImg = img.set({ left: 0, top: 0, angle: 0 }).scale(0.1);
+      oImg.setControlsVisibility({ mt: false, mb: false, ml: false, mr: false });
       imageObjects.push(oImg);
       canvas.add(oImg).renderAll();
-      var a = canvas.setActiveObject(oImg);
-      var dataURL = canvas.toDataURL({ format: 'png', quality: 0.8 });
     });
   };
   reader.readAsDataURL(file);
@@ -21,26 +23,43 @@ document.getElementById('fileInp').addEventListener("change", function (e) {
 
 document.getElementById('addText').onclick = () => {
   const textbox = new fabric.Textbox('New Text', {
+    id: textObjects.length + 1,
     left: 15,
     top: 15,
     width: 80,
     fontSize: 14,
-    fontFamily: 'Arial'
+    fontFamily: 'Arial',
+    fill: 'red'
+  });
+  textbox.setControlsVisibility({ mt: false, mb: false });
+  textbox.on('deselected', () => {
+    lastlySelectedObject = textbox;
   });
   textObjects.push(textbox);
   canvas.add(textbox).setActiveObject(textbox);
   canvas.moveTo(textbox, 999);
 }
 
-window.addEventListener('click' , (event) => {
-  if(event.target.tagName.toLowerCase() !== 'canvas'){
-    for(let text of textObjects){
-      canvas.bringToFront(text)
+colorInput.oninput = ({ target: { value } }) => {
+  if (lastlySelectedObject) {
+    lastlySelectedObject.set('fill', value);
+    canvas.renderAll();
+  }
+}
+
+window.addEventListener('click', (event) => {
+  if (event.target.tagName.toLowerCase() !== 'canvas') {
+    for (let text of textObjects) {
+      canvas.bringToFront(text);
     }
     canvas.discardActiveObject();
-    canvas.renderAll(); 
+    canvas.renderAll();
   }
-})
+
+  // if (event.target.getAttribute('id') !== 'choose_color') {
+  //   colorInput.setAttribute('disabled', 'disabled');
+  // }
+});
 
 
 
