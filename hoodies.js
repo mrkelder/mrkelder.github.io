@@ -68,17 +68,23 @@ function changeView(e) {
 
   viewObjects.forEach((element, index) => {
     if (index === currentViewIndex) {
-      console.log(index, currentViewIndex)
       for (let text of element.textObjects) {
-        console.log(text);
         text.set({ selectable: true });
         text.opacity = 1;
+      }
+      for (let img of element.imageObjects) {
+        img.set({ selectable: true });
+        img.opacity = 1;
       }
     }
     else {
       for (let text of element.textObjects) {
         text.set({ selectable: false });
         text.opacity = 0;
+      }
+      for (let img of element.imageObjects) {
+        img.set({ selectable: false });
+        img.opacity = 0;
       }
     }
   });
