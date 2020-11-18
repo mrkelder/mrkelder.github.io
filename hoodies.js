@@ -4,12 +4,17 @@ const fakeData = [
     name: 'turquoise',
     color: 'turquoise',
     images: [
-      { name: 'Front', url: './hoodies/blue_front.webp', objects: [] },
       {
-        name: 'Left', url: './hoodies/blue_left.webp', addStyle: {
+        index: 0,
+        name: 'Front', url: './hoodies/blue_front.webp'
+      },
+      {
+        index: 1,
+        name: 'Left', url: './hoodies/blue_left.webp',
+        addStyle: {
           backgroundSize: '120%',
           backgroundPosition: '80% 114%'
-        }, objects: []
+        }
       },
     ]
   },
@@ -18,26 +23,65 @@ const fakeData = [
     name: 'heather black',
     color: 'black',
     images: [
-      { name: 'Front', url: './hoodies/black_front.webp', objects: [] },
       {
-        name: 'Left', url: './hoodies/black_left.webp', addStyle: {
+        index: 0,
+        name: 'Front', url: './hoodies/black_front.webp'
+      },
+      {
+        index: 1,
+        name: 'Left',
+        url: './hoodies/black_left.webp',
+        addStyle: {
           backgroundSize: '120%',
           backgroundPosition: '80% 114%'
-        }, objects: []
+        }
       },
     ]
   }
 ];
 
+const viewObjects = [
+  {
+    textObjects: [],
+    imageObjects: [],
+    textObjectsOpt: []
+  },
+  {
+    textObjects: [],
+    imageObjects: [],
+    textObjectsOpt: []
+  }
+]
+
 let currentColorThemeIndex = 0;
+let currentViewIndex = 0;
 const product_color_name = document.getElementById('product_color_name');
 const image = document.getElementById('image');
 const change_view = document.getElementById('change_view');
 
+
 function changeView(e) {
   const url = e.getAttribute('data-url');
-  const index = e.getAttribute('data-index');
+  const index = Number(e.getAttribute('data-index'));
+  currentViewIndex = index;
   image.style.backgroundImage = `url('${url}')`;
+
+  viewObjects.forEach((element, index) => {
+    if (index === currentViewIndex) {
+      console.log(index, currentViewIndex)
+      for (let text of element.textObjects) {
+        console.log(text);
+        text.set({ selectable: true });
+        text.opacity = 1;
+      }
+    }
+    else {
+      for (let text of element.textObjects) {
+        text.set({ selectable: false });
+        text.opacity = 0;
+      }
+    }
+  });
 
   if (fakeData[currentColorThemeIndex].images[index].addStyle) {
     image.style.backgroundPosition = fakeData[currentColorThemeIndex].images[index].addStyle.backgroundPosition;
@@ -51,6 +95,7 @@ function changeView(e) {
 }
 
 function changeColor(e) {
+  previosColorThemeIndex = currentColorThemeIndex;
   currentColorThemeIndex = Number(e.getAttribute('data-index'));
   change_view.innerText = "";
   for (let i of document.getElementsByClassName('color')) {
