@@ -71,20 +71,26 @@ function changeView(e) {
       for (let text of element.textObjects) {
         text.set({ selectable: true });
         text.opacity = 1;
+        canvas.bringToFront(text);
+        text.hoverCursor = 'move';
       }
       for (let img of element.imageObjects) {
         img.set({ selectable: true });
         img.opacity = 1;
+        canvas.bringToFront(img);
+        img.hoverCursor = 'move';
       }
     }
     else {
       for (let text of element.textObjects) {
         text.set({ selectable: false });
         text.opacity = 0;
+        text.hoverCursor = 'default';
       }
       for (let img of element.imageObjects) {
         img.set({ selectable: false });
         img.opacity = 0;
+        img.hoverCursor = 'default';
       }
     }
   });
