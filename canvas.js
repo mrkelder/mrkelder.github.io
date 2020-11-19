@@ -14,6 +14,9 @@ document.getElementById('fileInp').addEventListener("change", function (e) {
       oImg.setControlsVisibility({ mt: false, mb: false, ml: false, mr: false });
       viewObjects[currentViewIndex].imageObjects.push(oImg);
       canvas.add(oImg).renderAll();
+      oImg.on('deselected', () => {
+        lastlySelectedObject = oImg;
+      });
     });
   };
   reader.readAsDataURL(file);
@@ -55,12 +58,4 @@ window.addEventListener('click', (event) => {
     canvas.discardActiveObject();
     canvas.renderAll();
   }
-
-  // if (event.target.getAttribute('class') === 'view') {
-  //   canvas.remove(...canvas.getObjects());
-  // }
 });
-
-
-
-

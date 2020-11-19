@@ -61,6 +61,7 @@ const change_view = document.getElementById('change_view');
 
 
 function changeView(e) {
+  lastlySelectedObject = undefined;
   const url = e.getAttribute('data-url');
   const index = Number(e.getAttribute('data-index'));
   currentViewIndex = index;
@@ -109,6 +110,7 @@ function changeView(e) {
 function changeColor(e) {
   previosColorThemeIndex = currentColorThemeIndex;
   currentColorThemeIndex = Number(e.getAttribute('data-index'));
+  currentViewIndex = 0;
   change_view.innerText = "";
   for (let i of document.getElementsByClassName('color')) {
     i.style.backgroundImage = 'none';
@@ -125,4 +127,51 @@ function changeColor(e) {
   product_color_name.innerText = fakeData[currentColorThemeIndex].name;
 
   document.getElementById(`color_${currentColorThemeIndex}`).style.backgroundImage = "url('./tick.png')";
+
+  viewObjects.forEach((element, index) => {
+    if (index === currentViewIndex) {
+      for (let text of element.textObjects) {
+        text.set({ selectable: true });
+        text.opacity = 1;
+        canvas.bringToFront(text);
+        text.hoverCursor = 'move';
+      }
+      for (let img of element.imageObjects) {
+        img.set({ selectable: true });
+        img.opacity = 1;
+        canvas.bringToFront(img);
+        img.hoverCursor = 'move';
+      }
+    }
+    else {
+      for (let text of element.textObjects) {
+        text.set({ selectable: false });
+        text.opacity = 0;
+        text.hoverCursor = 'default';
+      }
+      for (let img of element.imageObjects) {
+        img.set({ selectable: false });
+        img.opacity = 0;
+        img.hoverCursor = 'default';
+      }
+    }
+  });
 }
+
+document.getElementById('removeObject').onclick = () => {
+  for (let element of viewObjects) {
+    element.textObjects.forEach(i => {
+      i.set({ selectable: false });
+      i.opacity = 0;
+      i.hoverCursor = 'default';
+    });
+    element.textObjects = [];
+    element.imageObjects.forEach(i => {
+
+      i.set({ selectable: false });
+      i.opacity = 0;
+      i.hoverCursor = 'default';
+    });
+    element.imageObjects = [];
+  }
+};
