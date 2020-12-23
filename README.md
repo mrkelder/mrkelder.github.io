@@ -95,12 +95,12 @@ Root
 
 ### App.js
 
-`
+```
 window.addEventListener('resize', () => {
   const windowSize = document.getElementsByTagName('html')[0].clientWidth;
   store.dispatch({ type: 'windowSize/resize', payload: windowSize });
 });
-`
+```
 
 ### cartReducer.js
 
